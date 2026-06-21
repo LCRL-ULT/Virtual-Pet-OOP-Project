@@ -26,6 +26,7 @@ public abstract class Pet implements Feedable {
     public void play() {
         happiness += 10;
         energy -= 10;
+        hunger += 10; 
     }
 
     public void sleep() {
