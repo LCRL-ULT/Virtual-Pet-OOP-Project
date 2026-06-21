@@ -1,4 +1,6 @@
+
 public class Dragon extends Pet {
+
     private int fireLevel;
 
     public Dragon(String name, int fireLevel) {
@@ -14,6 +16,10 @@ public class Dragon extends Pet {
 
     @Override
     public void feed() {
+        if (isFull()) {
+            System.out.println(getName() + " is full and refuses the feast.");
+            return;
+        }
         hunger -= 25;
         happiness += 20;
         System.out.println(getName() + " devours an entire feast!");

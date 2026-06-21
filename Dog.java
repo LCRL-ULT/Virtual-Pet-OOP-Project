@@ -1,4 +1,6 @@
+
 public class Dog extends Pet {
+
     private String breed;
 
     public Dog(String name, String breed) {
@@ -14,6 +16,10 @@ public class Dog extends Pet {
 
     @Override
     public void feed() {
+        if (isFull()) {
+            System.out.println(getName() + " is full and doesn't want to eat.");
+            return;
+        }
         hunger -= 15;
         happiness += 10;
         System.out.println(getName() + " gobbles the food happily!");

@@ -1,4 +1,6 @@
+
 public class Cat extends Pet {
+
     private boolean isIndoor;
 
     public Cat(String name, boolean isIndoor) {
@@ -14,6 +16,10 @@ public class Cat extends Pet {
 
     @Override
     public void feed() {
+        if (isFull()) {
+            System.out.println(getName() + " turns its nose up — too full to eat.");
+            return;
+        }
         hunger -= 10;
         happiness += 5;
         System.out.println(getName() + " nibbles delicately at the food.");

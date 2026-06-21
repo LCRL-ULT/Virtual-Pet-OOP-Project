@@ -21,9 +21,18 @@ public abstract class Pet implements Feedable {
         return energy;
     }
 
+    public boolean isFull() {
+        return hunger <= 10;
+    }
+
     public void play() {
+        if (energy < 20) {
+            System.out.println(getName() + " is too tired to play right now.");
+            return;
+        }
         happiness += 10;
         energy -= 10;
+        System.out.println(getName() + " is having fun playing!");
     }
 
     public void sleep() {
