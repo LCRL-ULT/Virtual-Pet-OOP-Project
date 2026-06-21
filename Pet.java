@@ -16,6 +16,8 @@ public abstract class Pet implements Feedable {
     // Abstract method — every pet MUST define its own sound
     public abstract void makeSound();
 
+    public abstract void hungrySound();
+
     // Shared behavior all pets inherit
     public int getEnergy() {
         return energy;
@@ -64,4 +66,12 @@ public abstract class Pet implements Feedable {
         this.energy = energy;
     }
 
+    // To limit the value of hunger to 100 
+    public void increaseHunger(int amount){
+    hunger += amount; 
+    if (hunger > 100){
+        hunger = 100; 
+    }
 }
+}
+

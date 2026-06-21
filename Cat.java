@@ -13,6 +13,12 @@ public class Cat extends Pet {
     }
 
     @Override
+    public void hungrySound(){
+        System.out.println(getName() + "is hungry!");
+        SoundPlay.play("Sounds/mixkit-cartoon-kitty-begging-meow-92.wav");
+    }
+
+    @Override
     public void feed() {
         hunger -= 10;
         happiness += 5;
