@@ -9,6 +9,7 @@ public class Dog extends Pet {
     @Override
     public void makeSound() {
         System.out.println(getName() + " says: Woof! Woof!");
+        SoundPlay.play("Sounds\\mixkit-dog-barking-twice-1.wav");
     }
 
     @Override
@@ -16,6 +17,7 @@ public class Dog extends Pet {
         hunger -= 15;
         happiness += 10;
         System.out.println(getName() + " gobbles the food happily!");
+        SoundPlay.play("Sounds/freesound_community-dog-eating-43938_[cut_5sec].wav");
     }
 
     // Dog's own unique method

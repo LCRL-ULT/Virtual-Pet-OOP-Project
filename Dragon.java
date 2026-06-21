@@ -9,6 +9,7 @@ public class Dragon extends Pet {
     @Override
     public void makeSound() {
         System.out.println(getName() + " lets out a mighty ROAAAR!");
+        SoundPlay.play("Sounds/dragon-studio-epic-dragon-roar-364481.wav");
     }
 
     @Override
@@ -16,6 +17,7 @@ public class Dragon extends Pet {
         hunger -= 25;
         happiness += 20;
         System.out.println(getName() + " devours an entire feast!");
+        SoundPlay.play("Sounds\\Dragon Bite Sound Effect - Needed Sound Effects (128k).wav");
     }
 
     // Dragon's own unique method
