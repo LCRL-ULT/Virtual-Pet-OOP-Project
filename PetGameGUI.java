@@ -11,6 +11,8 @@ public class PetGameGUI extends JFrame {
     private JProgressBar happinessBar;
     private JProgressBar energyBar;
 
+    private static final int hungry_threshold = 75; //Hunger value to trigger sound
+
 
     public PetGameGUI(Owner owner) {
         this.owner = owner;
@@ -71,6 +73,25 @@ public class PetGameGUI extends JFrame {
         // Start with the first pet selected
         selectPet();
         setVisible(true);
+
+        startHungerTimer(); //When game is open hunger will increase overtime
+    }
+
+    private void startHungerTimer(){
+        Timer hungerTimer = new Timer(10_000, event -> {
+            for (Pet pet : owner.getPets()) {
+                pet.increaseHunger(5);
+
+                boolean isVeryHungry = pet.getHunger() >= hungry_threshold; 
+
+                if (isVeryHungry){
+                    pet.hungrySound();
+                }
+            }
+
+            refresh();
+        });
+        hungerTimer.start();
     }
 
     private JProgressBar makeBar(Color color) {

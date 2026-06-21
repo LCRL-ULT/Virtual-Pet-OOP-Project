@@ -15,6 +15,13 @@ public class Dog extends Pet {
     }
 
     @Override
+     public void hungrySound(){
+        System.out.println(getName() + "is hungry!");
+        SoundPlay.play("Sounds/mixkit-dog-sad-whimper-467.wav");
+    }
+
+
+    @Override
     public void feed() {
         if (isFull()) {
             System.out.println(getName() + " is full and doesn't want to eat.");
