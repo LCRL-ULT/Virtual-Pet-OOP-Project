@@ -11,9 +11,11 @@ public class PetGameGUI extends JFrame {
     private JProgressBar happinessBar;
     private JProgressBar energyBar;
 
+
     public PetGameGUI(Owner owner) {
         this.owner = owner;
-
+        DatabaseConnection.initialize();
+        
         setTitle("Virtual Pet Game");
         setSize(420, 380);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -106,11 +108,23 @@ public class PetGameGUI extends JFrame {
         soundLabel.setText(selectedPet.getName() + " made a sound! (check console)");
     }
 
-    public static void main(String[] args) {
+   public static void main(String[] args) {
         Owner owner = new Owner(1, "Alex");
         owner.adoptPet(new Dog("Rex", "Labrador"));
         owner.adoptPet(new Cat("Whiskers", true));
         owner.adoptPet(new Dragon("Smaug", 100));
+
+        // Save all pets to the real database
+        owner.saveToDatabase();
+
+        // Load them back to prove persistence works
+        System.out.println("\n--- Loading pets from database ---");
+        for (Pet p : DatabaseConnection.loadAllPets()) {
+            System.out.println(p.getName() + " (" + p.getClass().getSimpleName() +
+                ") - hunger: " + p.getHunger() +
+                ", happiness: " + p.getHappiness() +
+                ", energy: " + p.getEnergy());
+        }
 
         // Launch the window
         SwingUtilities.invokeLater(() -> new PetGameGUI(owner));
