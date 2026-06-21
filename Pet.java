@@ -1,4 +1,6 @@
+
 public abstract class Pet implements Feedable {
+
     private String name;
     protected int hunger;
     protected int happiness;
@@ -15,7 +17,6 @@ public abstract class Pet implements Feedable {
     public abstract void makeSound();
 
     // Shared behavior all pets inherit
-    
     public int getEnergy() {
         return energy;
     }
@@ -24,6 +25,7 @@ public abstract class Pet implements Feedable {
         happiness += 10;
         energy -= 10;
     }
+
     public void sleep() {
         energy += 20;
         System.out.println(name + " is sleeping. Energy is now " + energy);
@@ -49,4 +51,17 @@ public abstract class Pet implements Feedable {
     public int getHappiness() {
         return happiness;
     }
+
+    public void setHunger(int hunger) {
+        this.hunger = hunger;
+    }
+
+    public void setHappiness(int happiness) {
+        this.happiness = happiness;
+    }
+
+    public void setEnergy(int energy) {
+        this.energy = energy;
+    }
+
 }

@@ -34,11 +34,11 @@ public class Owner {
         }
     }
 
-    public void saveToDatabase() {
+public void saveToDatabase() {
         System.out.println("\n--- Saving " + name + "'s pets ---");
-        DatabaseConnection.getConnection();
+        DatabaseConnection.initialize();
         for (Pet pet : pets) {
-            DatabaseConnection.save(pet.getName() + " (hunger: " + pet.getHunger() + ")");
+            DatabaseConnection.savePet(pet, name);
         }
     }
 
