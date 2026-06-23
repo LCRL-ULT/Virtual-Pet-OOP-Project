@@ -90,6 +90,7 @@ Virtual-Pet-OOP-Project/
 ├── database/      DatabaseConnection
 ├── ui/            PetGameGUI, PetGame
 ├── util/          SoundPlay
+├── images/        .png pet illustrations
 ├── Sounds/        .wav sound effect files
 ├── mysql-connector-java-8.0.27.jar
 └── virtualpet.sql
