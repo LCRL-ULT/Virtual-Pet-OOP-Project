@@ -18,8 +18,8 @@ public class Dragon extends Pet {
     }
 
      public void hungrySound(){
-        System.out.println(getName() + "is hungry!");
-        SoundPlay.play("Sounds/mixkit-dog-sad-whimper-467.wav");
+        System.out.println(getName() + " is hungry!");
+        SoundPlay.play("Sounds/dragon-studio-dragon-growl-364483.wav");
     }
 
     @Override
