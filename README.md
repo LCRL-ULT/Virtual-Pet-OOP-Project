@@ -4,14 +4,14 @@ A Java-based virtual pet game built with Object-Oriented Programming principles,
 featuring a MySQL database for persistence, sound effects, and a Swing GUI.
 
 **Course:** CAK2KAB4 - IF-48-INT (Object-Oriented Programming)
-**Group:** Kelompok 8
+**Group:** Kelompok 2
 **Members:**
 
-- Argya 
-- Axella 
-- Carrol 
-- Tom
-- Lakshay
+- Carrol E. L - 103012450002
+- Putu Argya D. - 103012440010
+- Axella N. H. - 103012440018
+- Tom H. - 103012400245
+- Lakshay - 102022560014
 
 ---
 
