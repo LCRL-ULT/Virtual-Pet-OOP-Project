@@ -20,7 +20,7 @@ public class Dog extends Pet {
     @Override
      public void hungrySound(){
         System.out.println(getName() + " is hungry!");
-        SoundPlay.play("Sounds/mixkit-dog-sad-whimper-467.wav");
+        SoundPlay.play("Sounds/ElevenLabs_High-pitched_Chihuahua_whine,_urgent_and_pleading.wav");
     }
 
 
@@ -31,15 +31,16 @@ public class Dog extends Pet {
             return;
         }
         hunger -= 15;
-        happiness += 10;
+        happiness += 5;
         System.out.println(getName() + " gobbles the food happily!");
         SoundPlay.play("Sounds/freesound_community-dog-eating-43938_[cut_5sec].wav");
     }
 
-    // Dog's own unique method
+    // Dog's own unique method  
     public void fetch() {
         energy -= 10;
         happiness += 15;
+        hunger += 5;
         System.out.println(getName() + " fetches the ball!");
     }
 }

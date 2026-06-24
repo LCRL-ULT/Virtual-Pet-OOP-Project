@@ -19,19 +19,24 @@ public abstract class Pet implements Feedable {
 
     public abstract void hungrySound();
 
+
     // Shared behavior all pets inherit
     public int getEnergy() {
         return energy;
     }
 
     public boolean isFull() {
-        return hunger <= 10;
+        return hunger >= 100;
     }
 
     public void play() {
         if (energy < 20) {
             System.out.println(getName() + " is too tired to play right now.");
             return;
+        }
+        if (hunger > 75) {
+            System.out.println(getName() + " is too hungry to play right now");
+            return; 
         }
         happiness += 10;
         energy -= 10;
@@ -79,10 +84,18 @@ public abstract class Pet implements Feedable {
 
     // To limit the value of hunger to 100 
     public void increaseHunger(int amount){
-    hunger += amount; 
-    if (hunger > 100){
+        hunger += amount; 
+        if (hunger > 100){
         hunger = 100; 
+        }
     }
-}
+
+    //Limit the value of happiness to 0 
+    public void decreaseHappiness(int amount){
+        happiness -= amount; 
+        if (happiness < 0){
+            happiness = 0; 
+        }
+    }
 }
 

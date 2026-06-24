@@ -1,10 +1,5 @@
-package ui;
-
-import models.*;
-import database.DatabaseConnection;
 import java.awt.*;
 import javax.swing.*;
-import java.util.ArrayList;
 
 public class PetGameGUI extends JFrame {
     private Owner owner;
@@ -63,7 +58,7 @@ public class PetGameGUI extends JFrame {
         JButton playBtn = new JButton("Play");
         JButton sleepBtn = new JButton("Sleep");
         JButton soundBtn = new JButton("Make Sound");
-        
+
         feedBtn.addActionListener(e -> { selectedPet.feed(); refresh(); });
         playBtn.addActionListener(e -> { selectedPet.play(); refresh(); });
         sleepBtn.addActionListener(e -> { selectedPet.sleep(); refresh(); });
@@ -80,9 +75,9 @@ public class PetGameGUI extends JFrame {
         setVisible(true);
 
         startHungerTimer(); //When game is open hunger will increase overtime
-        startHappinessTimer(); //Same thing but for happiness 
     }
 
+    //Timer for when hunger increase, with the interval of 10 seconds hunger will increase by 5
     private void startHungerTimer(){
         Timer hungerTimer = new Timer(10_000, event -> {
             for (Pet pet : owner.getPets()) {
@@ -98,24 +93,6 @@ public class PetGameGUI extends JFrame {
             refresh();
         });
         hungerTimer.start();
-    }
-
-    private void startHappinessTimer(){
-        Timer HappyTimer = new Timer(10_000, event -> {
-            for (Pet pet : owner.getPets()) {
-                if (pet.getHunger() >= hungry_threshold) {
-                    pet.decreaseHappiness(10);
-                }else {
-                    pet.decreaseHappiness(5);
-                }
-                if (pet.getHappiness() <= 20){
-                    System.out.println(getName() + " is very unhappy right now!");
-                }
-            }
-
-            refresh();
-        }); 
-        HappyTimer.start();
     }
 
     private JProgressBar makeBar(Color color) {
