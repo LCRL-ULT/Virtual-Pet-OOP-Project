@@ -6,6 +6,7 @@ import javax.swing.*;
 import models.*;
 
 public class PetGameGUI extends JFrame {
+
     private Owner owner;
     private Pet selectedPet;
 
@@ -37,7 +38,15 @@ public class PetGameGUI extends JFrame {
 
         setTitle("Virtual Pet Game");
         setSize(450, 550);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        // Save the current pet stats back to the database when the window is closed
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                saveGame();
+                System.exit(0);
+            }
+        });
         setLayout(new BorderLayout(15, 15));
         getContentPane().setBackground(COLOR_BG);
 
@@ -47,7 +56,7 @@ public class PetGameGUI extends JFrame {
         selectLabel.setFont(FONT_MAIN);
         selectLabel.setForeground(COLOR_TEXT);
         topPanel.add(selectLabel);
-        
+
         petSelector = new JComboBox<>();
         petSelector.setFont(FONT_MAIN);
         for (Pet pet : owner.getPets()) {
@@ -61,19 +70,19 @@ public class PetGameGUI extends JFrame {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBackground(COLOR_PANEL);
         centerPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(10, 20, 20, 20),
-            BorderFactory.createLineBorder(new Color(220, 225, 230), 1, true)
+                BorderFactory.createEmptyBorder(10, 20, 20, 20),
+                BorderFactory.createLineBorder(new Color(220, 225, 230), 1, true)
         ));
 
         imageLabel = new JLabel("", SwingConstants.CENTER);
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        
+
         soundLabel = new JLabel("Select a pet to begin", SwingConstants.CENTER);
         soundLabel.setFont(FONT_TITLE);
         soundLabel.setForeground(COLOR_TEXT);
         soundLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         centerPanel.add(imageLabel);
         centerPanel.add(soundLabel);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -89,21 +98,30 @@ public class PetGameGUI extends JFrame {
         statsPanel.add(labeledBar("Hunger", hungerBar));
         statsPanel.add(labeledBar("Happiness", happinessBar));
         statsPanel.add(labeledBar("Energy", energyBar));
-        
+
         centerPanel.add(statsPanel);
         add(centerPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
         buttonPanel.setBackground(COLOR_BG);
-        
+
         JButton feedBtn = styleButton(new JButton("Feed"));
         JButton playBtn = styleButton(new JButton("Play"));
         JButton sleepBtn = styleButton(new JButton("Sleep"));
         JButton soundBtn = styleButton(new JButton("Speak"));
-        
-        feedBtn.addActionListener(e -> { selectedPet.feed(); refresh(); });
-        playBtn.addActionListener(e -> { selectedPet.play(); refresh(); });
-        sleepBtn.addActionListener(e -> { selectedPet.sleep(); refresh(); });
+
+        feedBtn.addActionListener(e -> {
+            selectedPet.feed();
+            refresh();
+        });
+        playBtn.addActionListener(e -> {
+            selectedPet.play();
+            refresh();
+        });
+        sleepBtn.addActionListener(e -> {
+            selectedPet.sleep();
+            refresh();
+        });
         soundBtn.addActionListener(e -> makeSound());
 
         buttonPanel.add(feedBtn);
@@ -127,17 +145,17 @@ public class PetGameGUI extends JFrame {
         btn.setForeground(COLOR_TEXT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(8, 15, 8, 15)
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(8, 15, 8, 15)
         ));
         return btn;
     }
 
-    private void startHungerTimer(){
+    private void startHungerTimer() {
         Timer hungerTimer = new Timer(10_000, event -> {
             for (Pet pet : owner.getPets()) {
                 pet.increaseHunger(5);
-                if (pet.getHunger() >= hungry_threshold){
+                if (pet.getHunger() >= hungry_threshold) {
                     pet.hungrySound();
                 }
             }
@@ -146,7 +164,7 @@ public class PetGameGUI extends JFrame {
         hungerTimer.start();
     }
 
-    private void startHappinessTimer(){
+    private void startHappinessTimer() {
         Timer HappyTimer = new Timer(10_000, event -> {
             for (Pet pet : owner.getPets()) {
                 if (pet.getHunger() >= hungry_threshold) {
@@ -154,12 +172,12 @@ public class PetGameGUI extends JFrame {
                 } else {
                     pet.decreaseHappiness(5);
                 }
-                if (pet.getHappiness() <= 20){
+                if (pet.getHappiness() <= 20) {
                     System.out.println(pet.getName() + " is very unhappy right now!");
                 }
             }
             refresh();
-        }); 
+        });
         HappyTimer.start();
     }
 
@@ -194,7 +212,7 @@ public class PetGameGUI extends JFrame {
             refresh();
         }
     }
-    
+
     private void updatePetImage() {
         String type = selectedPet.getClass().getSimpleName().toLowerCase();
         String imagePath = "images/" + type + ".png";
@@ -219,21 +237,30 @@ public class PetGameGUI extends JFrame {
         soundLabel.setText(selectedPet.getName() + " says hello!");
     }
 
-   public static void main(String[] args) {
+// Save every pet's current stats to the database, replacing old rows so nothing duplicates
+    private void saveGame() {
+        DatabaseConnection.clearPets(); //clear the table first to avoid duplicate rows
+        for (Pet pet : owner.getPets()) {
+            DatabaseConnection.savePet(pet, owner.getName()); //save each pet's current state
+        }
+        System.out.println("[DB] Game saved on exit.");
+    }
+
+  public static void main(String[] args) {
+        DatabaseConnection.initialize();
+
         Owner owner = new Owner(1, "Alex");
-        owner.adoptPet(new Dog("Rex", "Blue Heeler"));
-        owner.adoptPet(new Cat("Whiskers", true));
-        owner.adoptPet(new Dragon("Smaug", 100));
 
-        DatabaseConnection.clearPets(); 
-        owner.saveToDatabase();
+        java.util.ArrayList<Pet> saved = DatabaseConnection.loadAllPets();
 
-        System.out.println("\n--- Loading pets from database ---");
-        for (Pet p : DatabaseConnection.loadAllPets()) {
-            System.out.println(p.getName() + " (" + p.getClass().getSimpleName() +
-                ") - hunger: " + p.getHunger() +
-                ", happiness: " + p.getHappiness() +
-                ", energy: " + p.getEnergy());
+        if (saved.isEmpty()) {
+            owner.adoptPet(new Dog("Rex", "Blue Heeler"));
+            owner.adoptPet(new Cat("Whiskers", true));
+            owner.adoptPet(new Dragon("Smaug", 100));
+        } else {
+            for (Pet p : saved) {
+                owner.adoptPet(p);
+            }
         }
 
         SwingUtilities.invokeLater(() -> new PetGameGUI(owner));
