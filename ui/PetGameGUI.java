@@ -7,7 +7,6 @@ import javax.swing.*;
 import models.*;
 
 public class PetGameGUI extends JFrame {
-
     private Owner owner;
     private Pet selectedPet;
 
@@ -35,6 +34,7 @@ public class PetGameGUI extends JFrame {
         setTitle("Virtual Pet Game - Playing as: " + owner.getName());
         setSize(480, 680);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
         // Save progress to the database when the window is closed
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -47,12 +47,13 @@ public class PetGameGUI extends JFrame {
                 System.exit(0);
             }
         });
+        
         setLayout(new BorderLayout(15, 15));
         getContentPane().setBackground(COLOR_BG);
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
         topPanel.setBackground(COLOR_BG);
-        JLabel selectLabel = new JLabel("Choose your pet:");
+        JLabel selectLabel = new JLabel("Choose your pet: ");
         selectLabel.setFont(FONT_MAIN);
         selectLabel.setForeground(COLOR_TEXT);
         topPanel.add(selectLabel);
@@ -74,7 +75,7 @@ public class PetGameGUI extends JFrame {
                 BorderFactory.createLineBorder(new Color(220, 225, 230), 1, true)
         ));
 
-        imageLabel = new JLabel("", SwingConstants.CENTER);
+        imageLabel = new JLabel(" ", SwingConstants.CENTER);
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
@@ -85,15 +86,15 @@ public class PetGameGUI extends JFrame {
 
         centerPanel.add(imageLabel);
         centerPanel.add(soundLabel);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 20))); 
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         JPanel statsPanel = new JPanel(new GridLayout(3, 1, 10, 15));
         statsPanel.setBackground(COLOR_PANEL);
         statsPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 10, 20));
 
-        hungerBar = makeBar(Color.decode("#FF6B6B")); 
-        happinessBar = makeBar(Color.decode("#4ECDC4")); 
-        energyBar = makeBar(Color.decode("#45B7D1")); 
+        hungerBar = makeBar(Color.decode("#FF6B6B"));
+        happinessBar = makeBar(Color.decode("#4ECDC4"));
+        energyBar = makeBar(Color.decode("#45B7D1"));
 
         statsPanel.add(labeledBar("Hunger", hungerBar));
         statsPanel.add(labeledBar("Happiness", happinessBar));
@@ -116,7 +117,7 @@ public class PetGameGUI extends JFrame {
         JButton specialBtn = styleButton(new JButton("Special"));
         JButton storeBtn = styleButton(new JButton("Store"));
         JButton adoptBtn = styleButton(new JButton("Adopt"));
-        
+
         feedBtn.addActionListener(e -> showFeedDialog());
         playBtn.addActionListener(e -> { selectedPet.play(); refresh(); passTime(); });
         sleepBtn.addActionListener(e -> { selectedPet.sleep(); refresh(); passTime(); });
@@ -132,35 +133,35 @@ public class PetGameGUI extends JFrame {
         buttonPanel.add(specialBtn);
         buttonPanel.add(storeBtn);
         buttonPanel.add(adoptBtn);
-        
+
         buttonContainer.add(buttonPanel, BorderLayout.CENTER);
         add(buttonContainer, BorderLayout.SOUTH);
 
         selectPet();
-        setLocationRelativeTo(null); 
+        setLocationRelativeTo(null);
         setVisible(true);
 
-        startTimers(); 
+        startTimers();
     }
 
     private void showAdoptDialog() {
         JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
-        panel.add(new JLabel("Pet Type:"));
+        panel.add(new JLabel("Pet Type: "));
         JComboBox<String> typeBox = new JComboBox<>(new String[]{"Dog", "Cat", "Dragon"});
         panel.add(typeBox);
-        panel.add(new JLabel("Pet Name:"));
+        panel.add(new JLabel("Pet Name: "));
         JTextField nameField = new JTextField();
         panel.add(nameField);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Adopt a New Pet", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        
+
         if (result == JOptionPane.OK_OPTION) {
             String pName = nameField.getText().trim();
             if (pName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please give your pet a name!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             String pType = (String) typeBox.getSelectedItem();
             Pet newPet = null;
             if (pType.equals("Dog")) newPet = new Dog(pName, "Mixed Breed");
@@ -168,10 +169,10 @@ public class PetGameGUI extends JFrame {
             else if (pType.equals("Dragon")) newPet = new Dragon(pName, 100);
 
             owner.adoptPet(newPet);
-            
+
             petSelector.addItem(newPet.getName());
             petSelector.setSelectedItem(newPet.getName());
-            
+
             JOptionPane.showMessageDialog(this, pName + " has joined your family!");
         }
     }
@@ -189,9 +190,9 @@ public class PetGameGUI extends JFrame {
         }
 
         String selected = (String) JOptionPane.showInputDialog(
-            this, "What will you feed " + selectedPet.getName() + "?",
-            "Feed Pet", JOptionPane.QUESTION_MESSAGE, null,
-            foodNames, foodNames[0]);
+                this, "What will you feed " + selectedPet.getName() + "?",
+                "Feed Pet", JOptionPane.QUESTION_MESSAGE, null,
+                foodNames, foodNames[0]);
 
         if (selected != null) {
             for (int i = 0; i < foodNames.length; i++) {
@@ -210,14 +211,14 @@ public class PetGameGUI extends JFrame {
 
     private void showStoreDialog() {
         String[] storeItems = {
-            "Apple (15 Nutrition)", "Fish (20 Nutrition)",
-            "Steak (30 Nutrition)", "Dragon Fruit (50 Nutrition)"
+                "Apple (15 Nutrition)", "Fish (20 Nutrition)",
+                "Steak (30 Nutrition)", "Dragon Fruit (50 Nutrition)"
         };
 
         String selected = (String) JOptionPane.showInputDialog(
-            this, "Welcome to the Store!\nSelect an item to grab:",
-            "Food Store", JOptionPane.PLAIN_MESSAGE, null,
-            storeItems, storeItems[0]);
+                this, "Welcome to the Store!\nSelect an item to grab:",
+                "Food Store", JOptionPane.PLAIN_MESSAGE, null,
+                storeItems, storeItems[0]);
 
         if (selected != null) {
             FoodItem newFood = null;
@@ -233,7 +234,7 @@ public class PetGameGUI extends JFrame {
         }
     }
 
-     private void showSpecialImageTemporarily() {
+    private void showSpecialImageTemporarily() {
         if (specialImageTimer != null && specialImageTimer.isRunning()) {
             specialImageTimer.stop();
         }
@@ -266,7 +267,7 @@ public class PetGameGUI extends JFrame {
         if (selectedPet instanceof Dragon) ((Dragon) selectedPet).breatheFire();
         else if (selectedPet instanceof Dog) ((Dog) selectedPet).fetch();
         else if (selectedPet instanceof Cat) ((Cat) selectedPet).scratch();
-        
+
         soundLabel.setText(selectedPet.getName() + " used a special ability!");
         refresh();
 
@@ -275,13 +276,13 @@ public class PetGameGUI extends JFrame {
 
     private void passTime() {
         for (Pet pet : owner.getPets()) {
-            pet.increaseHunger(2); 
+            pet.increaseHunger(2);
             if (pet.getHunger() >= hungry_threshold) pet.decreaseHappiness(5);
         }
         refresh();
     }
 
-    private void startTimers(){
+    private void startTimers() {
         Timer gameTimer = new Timer(10_000, event -> {
             for (Pet pet : owner.getPets()) {
                 pet.increaseHunger(5);
@@ -326,7 +327,7 @@ public class PetGameGUI extends JFrame {
         JLabel label = new JLabel(name);
         label.setFont(FONT_MAIN);
         label.setForeground(COLOR_TEXT);
-        label.setPreferredSize(new Dimension(80, 20)); 
+        label.setPreferredSize(new Dimension(80, 20));
         panel.add(label, BorderLayout.WEST);
         panel.add(bar, BorderLayout.CENTER);
         return panel;
@@ -374,9 +375,12 @@ public class PetGameGUI extends JFrame {
     }
 
     public static Owner runSetupScreen() {
-        try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception e) {}
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+        }
 
-        JDialog setupDialog = new JDialog((Frame)null, "Welcome to the Adoption Center", true);
+        JDialog setupDialog = new JDialog((Frame) null, "Welcome to the Adoption Center", true);
         setupDialog.setSize(400, 450);
         setupDialog.setLocationRelativeTo(null);
         setupDialog.setLayout(new BorderLayout(10, 10));
@@ -408,10 +412,10 @@ public class PetGameGUI extends JFrame {
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setBackground(COLOR_BG);
-        
+
         JButton adoptBtn = styleButton(new JButton("Adopt Pet"));
         JButton startBtn = styleButton(new JButton("Start Game"));
-        
+
         ArrayList<Pet> tempPets = new ArrayList<>();
 
         adoptBtn.addActionListener(e -> {
@@ -428,10 +432,10 @@ public class PetGameGUI extends JFrame {
 
             tempPets.add(newPet);
             adoptedModel.addElement(pName + " (" + pType + ")");
-            petNameField.setText(""); 
+            petNameField.setText("");
         });
 
-        Owner[] finalOwner = new Owner[1]; 
+        Owner[] finalOwner = new Owner[1];
 
         startBtn.addActionListener(e -> {
             String oName = ownerNameField.getText().trim();
@@ -443,31 +447,30 @@ public class PetGameGUI extends JFrame {
                 JOptionPane.showMessageDialog(setupDialog, "You must adopt at least one pet!");
                 return;
             }
-            
+
             Owner newOwner = new Owner(1, oName);
             for (Pet p : tempPets) {
                 newOwner.adoptPet(p);
             }
             newOwner.getInventory().add(new FoodItem("Apple", 15));
             newOwner.getInventory().add(new FoodItem("Steak", 30));
-            
+
             finalOwner[0] = newOwner;
-            setupDialog.dispose(); 
+            setupDialog.dispose();
         });
 
         buttonPanel.add(adoptBtn);
         buttonPanel.add(startBtn);
         setupDialog.add(buttonPanel, BorderLayout.SOUTH);
 
-        setupDialog.setVisible(true); 
+        setupDialog.setVisible(true);
         if (finalOwner[0] == null) System.exit(0);
-        
+
         return finalOwner[0];
     }
 
-   public static void main(String[] args) {
+    public static void main(String[] args) {
         DatabaseConnection.initialize();
-
         // Check if there's a saved game in the database
         java.util.ArrayList<Pet> saved = DatabaseConnection.loadAllPets();
 
@@ -477,19 +480,22 @@ public class PetGameGUI extends JFrame {
             // A save exists — ask the player: continue or start new?
             String[] options = {"Load saved game", "New game"};
             int choice = JOptionPane.showOptionDialog(
-                null,
-                "A saved game was found. What would you like to do?",
-                "Virtual Pet Game",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
+                    null,
+                    "A saved game was found. What would you like to do?",
+                    "Virtual Pet Game",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
             );
 
             if (choice == 0) {
                 // LOAD: rebuild the owner from the saved pets
-                player = new Owner(1, "Alex");
+                // Fetch the actual owner name from the database
+                String ownerName = DatabaseConnection.loadOwnerName();
+                player = new Owner(1, ownerName);
+                
                 for (Pet p : saved) {
                     player.adoptPet(p);
                 }
