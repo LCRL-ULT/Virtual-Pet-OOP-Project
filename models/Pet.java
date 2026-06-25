@@ -86,7 +86,7 @@ public abstract class Pet implements Feedable {
     public void increaseHunger(int amount){
         hunger += amount; 
         if (hunger > 100){
-        hunger = 100; 
+            hunger = 100; 
         }
     }
 
