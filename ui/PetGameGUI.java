@@ -17,6 +17,8 @@ public class PetGameGUI extends JFrame {
     private JProgressBar happinessBar;
     private JProgressBar energyBar;
 
+    private Timer specialImageTimer;
+
     private static final int hungry_threshold = 75;
 
     private static final Color COLOR_BG = new Color(245, 247, 250);
@@ -218,6 +220,35 @@ public class PetGameGUI extends JFrame {
         }
     }
 
+     private void showSpecialImageTemporarily() {
+        if (specialImageTimer != null && specialImageTimer.isRunning()) {
+            specialImageTimer.stop();
+        }
+
+        String type = selectedPet.getClass().getSimpleName().toLowerCase();
+        String imagePath = "images/" + type + "_special.png";
+
+        try {
+            ImageIcon icon = new ImageIcon(imagePath);
+
+            if (icon.getIconWidth() == -1 && type.equals("dragon")) {
+                icon = new ImageIcon("images/dragon__special.png");
+            }
+
+            Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            imageLabel.setIcon(null);
+            imageLabel.setText("(Special Image missing)");
+        }
+
+        specialImageTimer = new Timer(2000, e -> {
+            updatePetImage();
+        });
+        specialImageTimer.setRepeats(false);
+        specialImageTimer.start();
+    }
+
     private void useSpecialAbility() {
         if (selectedPet instanceof Dragon) ((Dragon) selectedPet).breatheFire();
         else if (selectedPet instanceof Dog) ((Dog) selectedPet).fetch();
@@ -225,6 +256,8 @@ public class PetGameGUI extends JFrame {
         
         soundLabel.setText(selectedPet.getName() + " used a special ability!");
         refresh();
+
+        showSpecialImageTemporarily();
     }
 
     private void passTime() {
@@ -290,6 +323,11 @@ public class PetGameGUI extends JFrame {
         int index = petSelector.getSelectedIndex();
         if (index >= 0) {
             selectedPet = owner.getPets().get(index);
+
+            if (specialImageTimer != null && specialImageTimer.isRunning()) {
+                specialImageTimer.stop();
+            }
+
             updatePetImage();
             soundLabel.setText(selectedPet.getName() + " is ready!");
             refresh();
