@@ -38,5 +38,6 @@ public class Cat extends Pet {
     public void scratch() {
         happiness = Math.min(100, happiness + 10);
         System.out.println(getName() + " scratches the post contentedly.");
+        SoundPlay.play("Sounds/dragon-studio-cute-cat-meow-472372.wav");
     }
 }

@@ -39,5 +39,6 @@ public class Dragon extends Pet {
         energy = Math.max(0, energy - 20);
         fireLevel += 5;
         System.out.println(getName() + " breathes fire! Fire level: " + fireLevel);
+        SoundPlay.play("Sounds/dragon-studio-dragon-breathing-fire-364475-[AudioTrimmer.com].wav");
     }
 }

@@ -41,5 +41,6 @@ public class Dog extends Pet {
         happiness = Math.min(100, happiness + 15);
         hunger = Math.max(0, hunger - 5);
         System.out.println(getName() + " fetches the ball!");
+        SoundPlay.play("Sounds/yodguard-friendly-small-dog-bark-1-535470.wav");
     }
 }
