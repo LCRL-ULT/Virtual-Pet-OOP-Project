@@ -38,15 +38,15 @@ public abstract class Pet implements Feedable {
             System.out.println(getName() + " is too hungry to play right now");
             return; 
         }
-        happiness += 10;
-        energy -= 10;
+        happiness = Math.min(100, happiness + 10);
+        energy = Math.max(0, energy - 10);
+        hunger = Math.min(100, hunger + 10);
         System.out.println(getName() + " is having fun playing!");
-        hunger += 10; 
     }
 
     public void sleep() {
-        energy += 20;
-        System.out.println(name + " is sleeping. Energy is now " + energy);
+        energy = Math.min(100, energy + 20);
+        System.out.println(getName() + " is sleeping. Energy is now " + energy);
     }
 
     public void showStatus() {
