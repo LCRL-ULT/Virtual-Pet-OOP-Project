@@ -31,7 +31,7 @@ public class Dragon extends Pet {
         hunger -= 25;
         happiness += 10;
         System.out.println(getName() + " devours an entire feast!");
-        SoundPlay.play("Sounds\\Dragon Bite Sound Effect - Needed Sound Effects (128k).wav");
+        SoundPlay.play("Sounds/Dragon Bite Sound Effect - Needed Sound Effects (128k).wav");
     }
 
     // Dragon's own unique method

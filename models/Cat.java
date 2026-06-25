@@ -14,7 +14,7 @@ public class Cat extends Pet {
     @Override
     public void makeSound() {
         System.out.println(getName() + " says: Meow~");
-        SoundPlay.play("Sounds\\mixkit-sweet-kitty-meow-93.wav");
+        SoundPlay.play("Sounds/mixkit-sweet-kitty-meow-93.wav");
     }
 
     @Override

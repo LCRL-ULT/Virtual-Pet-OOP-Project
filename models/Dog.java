@@ -14,7 +14,7 @@ public class Dog extends Pet {
     @Override
     public void makeSound() {
         System.out.println(getName() + " says: Woof! Woof!");
-        SoundPlay.play("Sounds\\mixkit-dog-barking-twice-1.wav");
+        SoundPlay.play("Sounds/mixkit-dog-barking-twice-1.wav");
     }
 
     @Override
