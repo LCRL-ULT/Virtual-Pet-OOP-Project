@@ -30,29 +30,21 @@ public class PetGameGUI extends JFrame {
         this.owner = owner;
         DatabaseConnection.initialize();
 
-<<<<<<< HEAD
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        setTitle("Virtual Pet Game");
-        setSize(450, 550);
+        setTitle("Virtual Pet Game - Playing as: " + owner.getName());
+        setSize(480, 680);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        // Save the current pet stats back to the database when the window is closed
+        // Save progress to the database when the window is closed
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
-                saveGame();
+                DatabaseConnection.clearPets();
+                for (Pet pet : owner.getPets()) {
+                    DatabaseConnection.savePet(pet, owner.getName());
+                }
+                System.out.println("[DB] Game saved on exit.");
                 System.exit(0);
             }
         });
-=======
-        setTitle("Virtual Pet Game - Playing as: " + owner.getName());
-        setSize(480, 680);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
->>>>>>> origin/main
         setLayout(new BorderLayout(15, 15));
         getContentPane().setBackground(COLOR_BG);
 
@@ -119,22 +111,6 @@ public class PetGameGUI extends JFrame {
         JButton playBtn = styleButton(new JButton("Play"));
         JButton sleepBtn = styleButton(new JButton("Sleep"));
         JButton soundBtn = styleButton(new JButton("Speak"));
-<<<<<<< HEAD
-
-        feedBtn.addActionListener(e -> {
-            selectedPet.feed();
-            refresh();
-        });
-        playBtn.addActionListener(e -> {
-            selectedPet.play();
-            refresh();
-        });
-        sleepBtn.addActionListener(e -> {
-            selectedPet.sleep();
-            refresh();
-        });
-        soundBtn.addActionListener(e -> makeSound());
-=======
         JButton specialBtn = styleButton(new JButton("Special"));
         JButton storeBtn = styleButton(new JButton("Store"));
         JButton adoptBtn = styleButton(new JButton("Adopt"));
@@ -146,7 +122,6 @@ public class PetGameGUI extends JFrame {
         specialBtn.addActionListener(e -> { useSpecialAbility(); passTime(); });
         storeBtn.addActionListener(e -> showStoreDialog());
         adoptBtn.addActionListener(e -> showAdoptDialog());
->>>>>>> origin/main
 
         buttonPanel.add(feedBtn);
         buttonPanel.add(playBtn);
@@ -302,39 +277,6 @@ public class PetGameGUI extends JFrame {
         return btn;
     }
 
-<<<<<<< HEAD
-    private void startHungerTimer() {
-        Timer hungerTimer = new Timer(10_000, event -> {
-            for (Pet pet : owner.getPets()) {
-                pet.increaseHunger(5);
-                if (pet.getHunger() >= hungry_threshold) {
-                    pet.hungrySound();
-                }
-            }
-            refresh();
-        });
-        hungerTimer.start();
-    }
-
-    private void startHappinessTimer() {
-        Timer HappyTimer = new Timer(10_000, event -> {
-            for (Pet pet : owner.getPets()) {
-                if (pet.getHunger() >= hungry_threshold) {
-                    pet.decreaseHappiness(10);
-                } else {
-                    pet.decreaseHappiness(5);
-                }
-                if (pet.getHappiness() <= 20) {
-                    System.out.println(pet.getName() + " is very unhappy right now!");
-                }
-            }
-            refresh();
-        });
-        HappyTimer.start();
-    }
-
-=======
->>>>>>> origin/main
     private JProgressBar makeBar(Color color) {
         JProgressBar bar = new JProgressBar(0, 100);
         bar.setStringPainted(true);
@@ -393,35 +335,6 @@ public class PetGameGUI extends JFrame {
         soundLabel.setText(selectedPet.getName() + " says hello!");
     }
 
-<<<<<<< HEAD
-// Save every pet's current stats to the database, replacing old rows so nothing duplicates
-    private void saveGame() {
-        DatabaseConnection.clearPets(); //clear the table first to avoid duplicate rows
-        for (Pet pet : owner.getPets()) {
-            DatabaseConnection.savePet(pet, owner.getName()); //save each pet's current state
-        }
-        System.out.println("[DB] Game saved on exit.");
-    }
-
-  public static void main(String[] args) {
-        DatabaseConnection.initialize();
-
-        Owner owner = new Owner(1, "Alex");
-
-        java.util.ArrayList<Pet> saved = DatabaseConnection.loadAllPets();
-
-        if (saved.isEmpty()) {
-            owner.adoptPet(new Dog("Rex", "Blue Heeler"));
-            owner.adoptPet(new Cat("Whiskers", true));
-            owner.adoptPet(new Dragon("Smaug", 100));
-        } else {
-            for (Pet p : saved) {
-                owner.adoptPet(p);
-            }
-        }
-
-        SwingUtilities.invokeLater(() -> new PetGameGUI(owner));
-=======
     public static Owner runSetupScreen() {
         try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception e) {}
 
@@ -515,10 +428,49 @@ public class PetGameGUI extends JFrame {
     }
 
    public static void main(String[] args) {
-        Owner player = runSetupScreen();
-        DatabaseConnection.clearPets(); 
-        player.saveToDatabase();
+        DatabaseConnection.initialize();
+
+        // Check if there's a saved game in the database
+        java.util.ArrayList<Pet> saved = DatabaseConnection.loadAllPets();
+
+        Owner player;
+
+        if (!saved.isEmpty()) {
+            // A save exists — ask the player: continue or start new?
+            String[] options = {"Load saved game", "New game"};
+            int choice = JOptionPane.showOptionDialog(
+                null,
+                "A saved game was found. What would you like to do?",
+                "Virtual Pet Game",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+            );
+
+            if (choice == 0) {
+                // LOAD: rebuild the owner from the saved pets
+                player = new Owner(1, "Alex");
+                for (Pet p : saved) {
+                    player.adoptPet(p);
+                }
+                // give them some starting food so feeding works
+                player.getInventory().add(new FoodItem("Apple", 15));
+                player.getInventory().add(new FoodItem("Steak", 30));
+            } else {
+                // NEW GAME: run the setup screen, then clear and start fresh
+                player = runSetupScreen();
+                DatabaseConnection.clearPets();
+                player.saveToDatabase();
+            }
+        } else {
+            // No save yet — first time playing, run the setup screen
+            player = runSetupScreen();
+            DatabaseConnection.clearPets();
+            player.saveToDatabase();
+        }
+
         SwingUtilities.invokeLater(() -> new PetGameGUI(player));
->>>>>>> origin/main
     }
 }
