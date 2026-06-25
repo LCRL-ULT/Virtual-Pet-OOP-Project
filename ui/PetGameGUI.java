@@ -11,26 +11,45 @@ public class PetGameGUI extends JFrame {
 
     private JComboBox<String> petSelector;
     private JLabel soundLabel;
+    private JLabel imageLabel;
     private JProgressBar hungerBar;
     private JProgressBar happinessBar;
     private JProgressBar energyBar;
 
-    private static final int hungry_threshold = 75; //Hunger value to trigger sound
+    private static final int hungry_threshold = 75;
 
+    // Modern UI Colors
+    private final Color COLOR_BG = new Color(245, 247, 250);
+    private final Color COLOR_PANEL = Color.WHITE;
+    private final Color COLOR_TEXT = new Color(44, 62, 80);
+    private final Font FONT_MAIN = new Font("Segoe UI", Font.PLAIN, 14);
+    private final Font FONT_TITLE = new Font("Segoe UI", Font.BOLD, 18);
 
     public PetGameGUI(Owner owner) {
         this.owner = owner;
         DatabaseConnection.initialize();
-        
-        setTitle("Virtual Pet Game");
-        setSize(420, 380);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10, 10));
 
-        // --- Top: pick a pet ---
-        JPanel topPanel = new JPanel();
-        topPanel.add(new JLabel("Choose your pet:"));
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        setTitle("Virtual Pet Game");
+        setSize(450, 550);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(15, 15));
+        getContentPane().setBackground(COLOR_BG);
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+        topPanel.setBackground(COLOR_BG);
+        JLabel selectLabel = new JLabel("Choose your pet:");
+        selectLabel.setFont(FONT_MAIN);
+        selectLabel.setForeground(COLOR_TEXT);
+        topPanel.add(selectLabel);
+        
         petSelector = new JComboBox<>();
+        petSelector.setFont(FONT_MAIN);
         for (Pet pet : owner.getPets()) {
             petSelector.addItem(pet.getName());
         }
@@ -38,30 +57,49 @@ public class PetGameGUI extends JFrame {
         topPanel.add(petSelector);
         add(topPanel, BorderLayout.NORTH);
 
-        // --- Center: the stat bars ---
-        JPanel statsPanel = new JPanel();
-        statsPanel.setLayout(new GridLayout(4, 1, 5, 10));
-        statsPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBackground(COLOR_PANEL);
+        centerPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(10, 20, 20, 20),
+            BorderFactory.createLineBorder(new Color(220, 225, 230), 1, true)
+        ));
 
+        imageLabel = new JLabel("", SwingConstants.CENTER);
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        
         soundLabel = new JLabel("Select a pet to begin", SwingConstants.CENTER);
-        soundLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        statsPanel.add(soundLabel);
+        soundLabel.setFont(FONT_TITLE);
+        soundLabel.setForeground(COLOR_TEXT);
+        soundLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        centerPanel.add(imageLabel);
+        centerPanel.add(soundLabel);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        hungerBar = makeBar(Color.RED);
-        happinessBar = makeBar(Color.GREEN);
-        energyBar = makeBar(Color.BLUE);
+        JPanel statsPanel = new JPanel(new GridLayout(3, 1, 10, 15));
+        statsPanel.setBackground(COLOR_PANEL);
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 10, 20));
+
+        hungerBar = makeBar(Color.decode("#FF6B6B"));
+        happinessBar = makeBar(Color.decode("#4ECDC4"));
+        energyBar = makeBar(Color.decode("#45B7D1"));
 
         statsPanel.add(labeledBar("Hunger", hungerBar));
         statsPanel.add(labeledBar("Happiness", happinessBar));
         statsPanel.add(labeledBar("Energy", energyBar));
-        add(statsPanel, BorderLayout.CENTER);
+        
+        centerPanel.add(statsPanel);
+        add(centerPanel, BorderLayout.CENTER);
 
-        // --- Bottom: action buttons ---
-        JPanel buttonPanel = new JPanel();
-        JButton feedBtn = new JButton("Feed");
-        JButton playBtn = new JButton("Play");
-        JButton sleepBtn = new JButton("Sleep");
-        JButton soundBtn = new JButton("Make Sound");
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+        buttonPanel.setBackground(COLOR_BG);
+        
+        JButton feedBtn = styleButton(new JButton("Feed"));
+        JButton playBtn = styleButton(new JButton("Play"));
+        JButton sleepBtn = styleButton(new JButton("Sleep"));
+        JButton soundBtn = styleButton(new JButton("Speak"));
         
         feedBtn.addActionListener(e -> { selectedPet.feed(); refresh(); });
         playBtn.addActionListener(e -> { selectedPet.play(); refresh(); });
@@ -74,26 +112,35 @@ public class PetGameGUI extends JFrame {
         buttonPanel.add(soundBtn);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Start with the first pet selected
         selectPet();
+        setLocationRelativeTo(null);
         setVisible(true);
 
-        startHungerTimer(); //When game is open hunger will increase overtime
-        startHappinessTimer(); //Same thing but for happiness 
+        startHungerTimer();
+        startHappinessTimer();
+    }
+
+    private JButton styleButton(JButton btn) {
+        btn.setFont(FONT_MAIN);
+        btn.setFocusPainted(false);
+        btn.setBackground(Color.WHITE);
+        btn.setForeground(COLOR_TEXT);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+            BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+        return btn;
     }
 
     private void startHungerTimer(){
         Timer hungerTimer = new Timer(10_000, event -> {
             for (Pet pet : owner.getPets()) {
                 pet.increaseHunger(5);
-
-                boolean isVeryHungry = pet.getHunger() >= hungry_threshold; 
-
-                if (isVeryHungry){
+                if (pet.getHunger() >= hungry_threshold){
                     pet.hungrySound();
                 }
             }
-
             refresh();
         });
         hungerTimer.start();
@@ -104,14 +151,13 @@ public class PetGameGUI extends JFrame {
             for (Pet pet : owner.getPets()) {
                 if (pet.getHunger() >= hungry_threshold) {
                     pet.decreaseHappiness(10);
-                }else {
+                } else {
                     pet.decreaseHappiness(5);
                 }
                 if (pet.getHappiness() <= 20){
                     System.out.println(pet.getName() + " is very unhappy right now!");
                 }
             }
-
             refresh();
         }); 
         HappyTimer.start();
@@ -121,12 +167,20 @@ public class PetGameGUI extends JFrame {
         JProgressBar bar = new JProgressBar(0, 100);
         bar.setStringPainted(true);
         bar.setForeground(color);
+        bar.setBackground(new Color(235, 235, 235));
+        bar.setBorderPainted(false);
+        bar.setFont(new Font("Segoe UI", Font.BOLD, 12));
         return bar;
     }
 
     private JPanel labeledBar(String name, JProgressBar bar) {
-        JPanel panel = new JPanel(new BorderLayout(8, 0));
-        panel.add(new JLabel(name), BorderLayout.WEST);
+        JPanel panel = new JPanel(new BorderLayout(15, 0));
+        panel.setBackground(COLOR_PANEL);
+        JLabel label = new JLabel(name);
+        label.setFont(FONT_MAIN);
+        label.setForeground(COLOR_TEXT);
+        label.setPreferredSize(new Dimension(80, 20));
+        panel.add(label, BorderLayout.WEST);
         panel.add(bar, BorderLayout.CENTER);
         return panel;
     }
@@ -135,11 +189,25 @@ public class PetGameGUI extends JFrame {
         int index = petSelector.getSelectedIndex();
         if (index >= 0) {
             selectedPet = owner.getPets().get(index);
+            updatePetImage();
+            soundLabel.setText(selectedPet.getName() + " is ready!");
             refresh();
         }
     }
+    
+    private void updatePetImage() {
+        String type = selectedPet.getClass().getSimpleName().toLowerCase();
+        String imagePath = "images/" + type + ".png";
+        try {
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            imageLabel.setIcon(null);
+            imageLabel.setText("(Image missing: " + imagePath + ")");
+        }
+    }
 
-    // Update the bars to match the selected pet's current stats
     private void refresh() {
         hungerBar.setValue(selectedPet.getHunger());
         happinessBar.setValue(selectedPet.getHappiness());
@@ -147,9 +215,8 @@ public class PetGameGUI extends JFrame {
     }
 
     private void makeSound() {
-        // Polymorphism: each pet type prints its own sound to the console
         selectedPet.makeSound();
-        soundLabel.setText(selectedPet.getName() + " made a sound! (check console)");
+        soundLabel.setText(selectedPet.getName() + " says hello!");
     }
 
    public static void main(String[] args) {
@@ -158,12 +225,9 @@ public class PetGameGUI extends JFrame {
         owner.adoptPet(new Cat("Whiskers", true));
         owner.adoptPet(new Dragon("Smaug", 100));
 
-        // Clear old database entries before saving
-        DatabaseConnection.clearPets();
-        // Save all pets to the real database
+        DatabaseConnection.clearPets(); 
         owner.saveToDatabase();
 
-        // Load them back to prove persistence works
         System.out.println("\n--- Loading pets from database ---");
         for (Pet p : DatabaseConnection.loadAllPets()) {
             System.out.println(p.getName() + " (" + p.getClass().getSimpleName() +
@@ -172,7 +236,6 @@ public class PetGameGUI extends JFrame {
                 ", energy: " + p.getEnergy());
         }
 
-        // Launch the window
         SwingUtilities.invokeLater(() -> new PetGameGUI(owner));
     }
 }
