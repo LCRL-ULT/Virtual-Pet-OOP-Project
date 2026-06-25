@@ -1,9 +1,5 @@
 package database;
 
-import models.Pet;
-import models.Dog;
-import models.Cat;
-import models.Dragon;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,6 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import models.Cat;
+import models.Dog;
+import models.Dragon;
+import models.Pet;
 
 public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/virtualpet";
@@ -30,12 +30,12 @@ public class DatabaseConnection {
 
     public static void initialize() {
         String sql = "CREATE TABLE IF NOT EXISTS pets (" +
-                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                     "name VARCHAR(100) NOT NULL, " +
-                     "type VARCHAR(50) NOT NULL, " +
-                     "hunger INT, " +
-                     "happiness INT, " +
-                     "energy INT, " +
+                     "id INT AUTO_INCREMENT PRIMARY KEY," +
+                     "name VARCHAR(100) NOT NULL," +
+                     "type VARCHAR(50) NOT NULL," +
+                     "hunger INT," +
+                     "happiness INT," +
+                     "energy INT," +
                      "owner VARCHAR(100))";
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
@@ -75,6 +75,22 @@ public class DatabaseConnection {
 
     public static void save(String data) {
         System.out.println("[DB] (legacy) " + data);
+    }
+
+    // NEW METHOD: Fetch the owner's name from the database
+    public static String loadOwnerName() {
+        String ownerName = "Alex"; // Default fallback name
+        String sql = "SELECT owner FROM pets LIMIT 1";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                ownerName = rs.getString("owner");
+            }
+        } catch (SQLException e) {
+            System.out.println("[DB] Error loading owner name: " + e.getMessage());
+        }
+        return ownerName;
     }
 
     public static ArrayList<Pet> loadAllPets() {
