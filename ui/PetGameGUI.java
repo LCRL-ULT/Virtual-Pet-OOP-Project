@@ -1,10 +1,9 @@
 package ui;
 
-import models.*;
 import database.DatabaseConnection;
 import java.awt.*;
 import javax.swing.*;
-import java.util.ArrayList;
+import models.*;
 
 public class PetGameGUI extends JFrame {
     private Owner owner;
@@ -109,7 +108,7 @@ public class PetGameGUI extends JFrame {
                     pet.decreaseHappiness(5);
                 }
                 if (pet.getHappiness() <= 20){
-                    System.out.println(getName() + " is very unhappy right now!");
+                    System.out.println(pet.getName() + " is very unhappy right now!");
                 }
             }
 
