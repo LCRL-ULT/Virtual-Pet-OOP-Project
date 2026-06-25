@@ -10,7 +10,7 @@ public class PetGame {
 
         // Set up the owner and pets
         Owner owner = new Owner(1, "Alex");
-        owner.adoptPet(new Dog("Rex", "Labrador"));
+        owner.adoptPet(new Dog("Rex", "Blue Heeler"));
         owner.adoptPet(new Cat("Whiskers", true));
         owner.adoptPet(new Dragon("Smaug", 100));
 
