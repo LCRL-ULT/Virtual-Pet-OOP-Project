@@ -7,6 +7,7 @@ import javax.swing.*;
 import models.*;
 
 public class PetGameGUI extends JFrame {
+
     private Owner owner;
     private Pet selectedPet;
 
@@ -33,7 +34,19 @@ public class PetGameGUI extends JFrame {
 
         setTitle("Virtual Pet Game - Playing as: " + owner.getName());
         setSize(480, 680);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        // Save progress to the database when the window is closed
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                DatabaseConnection.clearPets();
+                for (Pet pet : owner.getPets()) {
+                    DatabaseConnection.savePet(pet, owner.getName());
+                }
+                System.out.println("[DB] Game saved on exit.");
+                System.exit(0);
+            }
+        });
         setLayout(new BorderLayout(15, 15));
         getContentPane().setBackground(COLOR_BG);
 
@@ -43,7 +56,7 @@ public class PetGameGUI extends JFrame {
         selectLabel.setFont(FONT_MAIN);
         selectLabel.setForeground(COLOR_TEXT);
         topPanel.add(selectLabel);
-        
+
         petSelector = new JComboBox<>();
         petSelector.setFont(FONT_MAIN);
         for (Pet pet : owner.getPets()) {
@@ -57,19 +70,19 @@ public class PetGameGUI extends JFrame {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBackground(COLOR_PANEL);
         centerPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(10, 20, 20, 20),
-            BorderFactory.createLineBorder(new Color(220, 225, 230), 1, true)
+                BorderFactory.createEmptyBorder(10, 20, 20, 20),
+                BorderFactory.createLineBorder(new Color(220, 225, 230), 1, true)
         ));
 
         imageLabel = new JLabel("", SwingConstants.CENTER);
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        
+
         soundLabel = new JLabel("Select a pet to begin", SwingConstants.CENTER);
         soundLabel.setFont(FONT_TITLE);
         soundLabel.setForeground(COLOR_TEXT);
         soundLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         centerPanel.add(imageLabel);
         centerPanel.add(soundLabel);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20))); 
@@ -85,7 +98,7 @@ public class PetGameGUI extends JFrame {
         statsPanel.add(labeledBar("Hunger", hungerBar));
         statsPanel.add(labeledBar("Happiness", happinessBar));
         statsPanel.add(labeledBar("Energy", energyBar));
-        
+
         centerPanel.add(statsPanel);
         add(centerPanel, BorderLayout.CENTER);
 
@@ -95,7 +108,7 @@ public class PetGameGUI extends JFrame {
 
         JPanel buttonPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         buttonPanel.setBackground(COLOR_BG);
-        
+
         JButton feedBtn = styleButton(new JButton("Feed"));
         JButton playBtn = styleButton(new JButton("Play"));
         JButton sleepBtn = styleButton(new JButton("Sleep"));
@@ -291,8 +304,8 @@ public class PetGameGUI extends JFrame {
         btn.setForeground(COLOR_TEXT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(8, 15, 8, 15)
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(8, 15, 8, 15)
         ));
         return btn;
     }
@@ -333,7 +346,7 @@ public class PetGameGUI extends JFrame {
             refresh();
         }
     }
-    
+
     private void updatePetImage() {
         String type = selectedPet.getClass().getSimpleName().toLowerCase();
         String imagePath = "images/" + type + ".png";
@@ -453,9 +466,49 @@ public class PetGameGUI extends JFrame {
     }
 
    public static void main(String[] args) {
-        Owner player = runSetupScreen();
-        DatabaseConnection.clearPets(); 
-        player.saveToDatabase();
+        DatabaseConnection.initialize();
+
+        // Check if there's a saved game in the database
+        java.util.ArrayList<Pet> saved = DatabaseConnection.loadAllPets();
+
+        Owner player;
+
+        if (!saved.isEmpty()) {
+            // A save exists — ask the player: continue or start new?
+            String[] options = {"Load saved game", "New game"};
+            int choice = JOptionPane.showOptionDialog(
+                null,
+                "A saved game was found. What would you like to do?",
+                "Virtual Pet Game",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+            );
+
+            if (choice == 0) {
+                // LOAD: rebuild the owner from the saved pets
+                player = new Owner(1, "Alex");
+                for (Pet p : saved) {
+                    player.adoptPet(p);
+                }
+                // give them some starting food so feeding works
+                player.getInventory().add(new FoodItem("Apple", 15));
+                player.getInventory().add(new FoodItem("Steak", 30));
+            } else {
+                // NEW GAME: run the setup screen, then clear and start fresh
+                player = runSetupScreen();
+                DatabaseConnection.clearPets();
+                player.saveToDatabase();
+            }
+        } else {
+            // No save yet — first time playing, run the setup screen
+            player = runSetupScreen();
+            DatabaseConnection.clearPets();
+            player.saveToDatabase();
+        }
+
         SwingUtilities.invokeLater(() -> new PetGameGUI(player));
     }
 }
