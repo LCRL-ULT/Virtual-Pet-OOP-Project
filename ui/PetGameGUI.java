@@ -158,6 +158,8 @@ public class PetGameGUI extends JFrame {
         owner.adoptPet(new Cat("Whiskers", true));
         owner.adoptPet(new Dragon("Smaug", 100));
 
+        // Clear old database entries before saving
+        DatabaseConnection.clearPets();
         // Save all pets to the real database
         owner.saveToDatabase();
 

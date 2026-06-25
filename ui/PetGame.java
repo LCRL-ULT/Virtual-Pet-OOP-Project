@@ -1,7 +1,8 @@
 package ui;
 
-import models.*;
+import database.DatabaseConnection;
 import java.util.Scanner;
+import models.*;
 
 public class PetGame {
     public static void main(String[] args) {
@@ -43,6 +44,7 @@ public class PetGame {
                     specialMenu(owner, scanner);
                     break;
                 case "5":
+                    DatabaseConnection.clearPets();
                     owner.saveToDatabase();
                     System.out.println("\nThanks for playing! Goodbye!");
                     playing = false;
