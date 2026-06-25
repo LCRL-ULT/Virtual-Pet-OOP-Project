@@ -7,6 +7,7 @@ public class Owner {
     private int ownerId;
     private String name;
     private ArrayList<Pet> pets;
+    private ArrayList<FoodItem> inventory = new ArrayList<>();
 
     public Owner(int ownerId, String name) {
         this.ownerId = ownerId;
@@ -19,14 +20,10 @@ public class Owner {
         System.out.println(name + " adopted " + pet.getName() + "!");
     }
 
-    public ArrayList<Pet> getPets() {
-        return pets;
-    }
-
     public void feedAllPets() {
         System.out.println("\n--- " + name + " is feeding all pets ---");
         for (Pet pet : pets) {
-            pet.feed();
+            pet.feed(inventory.get(0));
         }
     }
 
@@ -37,7 +34,7 @@ public class Owner {
         }
     }
 
-public void saveToDatabase() {
+    public void saveToDatabase() {
         System.out.println("\n--- Saving " + name + "'s pets ---");
         DatabaseConnection.initialize();
         for (Pet pet : pets) {
@@ -47,5 +44,13 @@ public void saveToDatabase() {
 
     public String getName() {
         return name;
+    }
+
+    public ArrayList<Pet> getPets() {
+        return pets;
+    }
+
+    public ArrayList<FoodItem> getInventory() {
+        return inventory;
     }
 }
