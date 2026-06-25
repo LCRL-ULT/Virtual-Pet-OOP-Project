@@ -26,7 +26,7 @@ public abstract class Pet implements Feedable {
     }
 
     public boolean isFull() {
-        return hunger >= 100;
+        return hunger <= 0;
     }
 
     public void play() {
