@@ -24,20 +24,19 @@ public class Cat extends Pet {
     }
 
     @Override
-    public void feed() {
+    public void feed(FoodItem food) {
         if (isFull()) {
             System.out.println(getName() + " turns its nose up — too full to eat.");
             return;
         }
-        hunger -= 10;
-        happiness += 5;
-        System.out.println(getName() + " nibbles delicately at the food.");
+        hunger = Math.max(0, hunger - food.getNutrition()); 
+        happiness = Math.min(100, happiness + 5);
+        System.out.println(getName() + " nibbles delicately at the " + food.getName() + ".");
         SoundPlay.play("Sounds/freesound_community-cat-eating-81278_[cut_4sec].wav");
     }
 
-    // Cat's own unique method
     public void scratch() {
-        happiness += 10;
+        happiness = Math.min(100, happiness + 10);
         System.out.println(getName() + " scratches the post contentedly.");
     }
 }

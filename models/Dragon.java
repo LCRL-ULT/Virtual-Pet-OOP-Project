@@ -23,20 +23,20 @@ public class Dragon extends Pet {
     }
 
     @Override
-    public void feed() {
+    public void feed(FoodItem food) {
         if (isFull()) {
             System.out.println(getName() + " is full and refuses the feast.");
             return;
         }
-        hunger -= 25;
-        happiness += 10;
-        System.out.println(getName() + " devours an entire feast!");
+        hunger = Math.max(0, hunger - food.getNutrition());
+        happiness = Math.min(100, happiness + 10);
+        System.out.println(getName() + " devours the " + food.getName() + " in one bite!");
         SoundPlay.play("Sounds/Dragon Bite Sound Effect - Needed Sound Effects (128k).wav");
     }
 
     // Dragon's own unique method
     public void breatheFire() {
-        energy -= 20;
+        energy = Math.max(0, energy - 20);
         fireLevel += 5;
         System.out.println(getName() + " breathes fire! Fire level: " + fireLevel);
     }

@@ -1,5 +1,5 @@
 package models;
 
 public interface Feedable {
-    void feed();
+    void feed(FoodItem food);
 }
